@@ -1,0 +1,26 @@
+import cv2
+import numpy as np
+import glob
+
+imlist = []
+for images in glob.glob('numbers/*.png'):
+    samples = cv2.imread(images,cv2.IMREAD_GRAYSCALE)
+    samples = samples.flatten()
+    imlist.append(samples)
+imlist = np.array(imlist, dtype=np.float32)
+
+k = np.arange(10)
+labels = np.repeat(k,5)
+
+targetlist = []
+target = cv2.imread("0_dig.png",cv2.IMREAD_GRAYSCALE)
+print(target)
+target = target.flatten()
+targetlist.append(target)
+targetlist = np.array(targetlist, dtype=np.float32)
+
+knn = cv2.ml.KNearest_create()
+knn.train(imlist, cv2.ml.ROW_SAMPLE, labels)
+ret, result, neighbours, dist = knn.findNearest(targetlist, k=1)
+
+print(result)
